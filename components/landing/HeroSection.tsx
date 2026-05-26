@@ -1,14 +1,13 @@
 'use client';
-// import { useRef } from 'react';
-import { useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
-// import { gsap } from '@/hooks/useGSAPAnimation';
 import { gsap, ScrollTrigger } from '@/hooks/useGSAPAnimation';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import HudLoadingScreen from '@/components/ui/HudLoadingScreen';
 import { STATS, SITE_CONFIG } from '@/lib/constants';
 // const ParticleField = dynamic(() => import('@/components/three/ParticleField'), { ssr: false });
 /* ── Lazy-load the heavy 3D canvas (no SSR) ── */
@@ -24,11 +23,11 @@ const values = [
   { icon: '🌍', title: 'Community', desc: 'A family of passionate technologists' },
 ];
 export default function HeroSection() {
-  // const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef<HTMLDivElement>(null);
   const scrollProgressRef = useRef<number>(0);
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const [isLoaded, setIsLoaded] = useState(false);
   /* ── Entrance animation for hero text ── */
   useGSAP(() => {
     if (!pinnedRef.current) return;
@@ -108,18 +107,10 @@ export default function HeroSection() {
     );
   }, { scope: containerRef, dependencies: [isMobile] });
   return (
-    // <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-    //   {/* Graffiti Background */}
-    //   <div className="absolute inset-0 z-0">
-    //     <Image
-    //       src="/images/graffiti/hero-bg.png"
-    //       alt=""
-    //       fill
-    //       className="object-cover opacity-20"
-    //       priority
-    //     />
-    //     <div className="absolute inset-0 bg-gradient-to-b from-[rgba(10,10,10,0.7)] via-[rgba(10,10,10,0.5)] to-[var(--bg-primary)]" />
-    //   </div>
+    <>
+    {/* Full-screen HUD loading overlay */}
+    <HudLoadingScreen onLoadingComplete={() => setIsLoaded(true)} />
+
     <div ref={containerRef} className="hero-about-container">
       <div ref={pinnedRef} className="hero-about-pinned">
         {/* ── Background layers ── */}
@@ -163,9 +154,7 @@ export default function HeroSection() {
         </p> */}
         {/* ── Hero Text Column (LEFT) ── */}
         <div className="hero-text-column">
-          <span className="hero-tag text-mono text-xs tracking-[0.2em]">
-            // ESTABLISHED 2018 — NIT PATNA
-          </span>
+
         {/* <p className="hero-tagline text-body max-w-lg text-lg">
           {SITE_CONFIG.tagline}. {SITE_CONFIG.description.slice(0, 120)}...
         </p> */}
@@ -268,7 +257,7 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-    {/* </section> */}
     </div>
+    </>
   );
 }
